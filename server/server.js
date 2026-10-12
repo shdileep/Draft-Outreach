@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { profileStore } from './profileStore.js';
 import { generateWithFallbackCascade } from './llmService.js';
@@ -10,14 +12,21 @@ const require = createRequire(import.meta.url);
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const distPath = path.join(__dirname, '..', 'dist');
+
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve compiled static production bundle
+app.use(express.static(distPath));
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -129,6 +138,14 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+// SPA routing fallback: send index.html for non-API requests
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    return res.sendFile(path.join(distPath, 'index.html'));
+  }
+  next();
+});
+
 app.listen(PORT, () => {
-  console.log(`[Draft Outreach Backend] API Server listening on port ${PORT}`);
+  console.log(`[Draft Outreach Unified Server] Application running entirely on port ${PORT}`);
 });
