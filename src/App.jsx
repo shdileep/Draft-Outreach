@@ -223,9 +223,9 @@ export default function App() {
   const wordCount = resultBody.trim() ? resultBody.trim().split(/\s+/).length : 0;
 
   return (
-    <div className="min-h-screen bg-white text-brand-black flex flex-col font-sans selection:bg-brand-black selection:text-white">
+    <div className={`min-h-screen bg-white text-brand-black flex flex-col font-sans selection:bg-brand-black selection:text-white ${currentView === 'landing' ? 'h-screen overflow-hidden' : ''}`}>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-border/60 transition-all">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-border/60 transition-all flex-shrink-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -241,11 +241,6 @@ export default function App() {
           </div>
 
           <nav className="flex items-center gap-4 sm:gap-6">
-            <div className="hidden sm:flex items-center text-xs tracking-wide text-brand-muted uppercase gap-4 font-mono">
-              <span>AI Cold Outreach</span>
-              <span className="text-brand-border">|</span>
-              <span>Monochrome Integrity</span>
-            </div>
 
             {currentView === 'landing' ? (
               <button
@@ -279,18 +274,9 @@ export default function App() {
       <main className="flex-1 flex flex-col">
         {/* VIEW 1: LANDING */}
         {currentView === 'landing' && (
-          <section className="flex-1 flex flex-col justify-between mx-auto px-4 sm:px-8 py-8 sm:py-14 w-full max-w-6xl animate-fadeIn">
-            {/* Tagline Badge */}
-            <div className="pt-2 sm:pt-4">
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-widest uppercase text-brand-muted border-b border-brand-border pb-1">
-                <span>Editorial AI for Job Outreach</span>
-                <span className="text-brand-subtle">·</span>
-                <span>Monochrome Integrity</span>
-              </div>
-            </div>
-
+          <section className="flex-1 flex flex-col justify-center mx-auto px-4 sm:px-8 w-full max-w-6xl animate-fadeIn overflow-hidden">
             {/* Central Grid */}
-            <div className="my-auto py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="my-auto py-2 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               {/* Left Column: Headline and Hero */}
               <div className="lg:col-span-6 flex flex-col justify-center">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal leading-[1.08] tracking-tight text-brand-black">
@@ -299,7 +285,7 @@ export default function App() {
                 </h1>
 
                 {/* Rotating cycling value propositions */}
-                <div className="mt-5 sm:mt-6 h-10 overflow-hidden flex items-center">
+                <div className="mt-4 sm:mt-5 h-10 overflow-hidden flex items-center">
                   <div
                     className="transition-transform duration-500 ease-out text-base sm:text-xl text-brand-muted font-sans font-light"
                     style={{ transform: `translateY(-${rotatingIndex * 40}px)` }}
@@ -312,12 +298,12 @@ export default function App() {
                   </div>
                 </div>
 
-                <p className="mt-4 sm:mt-5 text-sm sm:text-base text-brand-muted font-normal leading-relaxed max-w-lg">
+                <p className="mt-4 text-sm sm:text-base text-brand-muted font-normal leading-relaxed max-w-lg">
                   Generate bespoke recruiter outreach, warm referrals, and interview follow-ups synthesized directly from your resume and targeted job post. No generic hype.
                 </p>
 
                 {/* CTA */}
-                <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                <div className="mt-6 sm:mt-8 flex items-center">
                   <button
                     onClick={() => {
                       setCurrentView('workspace');
@@ -330,10 +316,6 @@ export default function App() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </button>
-
-                  <span className="text-xs text-brand-subtle font-mono">
-                    Single-page workflow · No signup barrier
-                  </span>
                 </div>
               </div>
 
@@ -444,20 +426,6 @@ export default function App() {
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Bottom Supporting Details */}
-            <div className="border-t border-brand-border/60 pt-6 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-brand-muted gap-4">
-              <p className="max-w-md font-light">
-                Built specifically for students, graduates, and engineers, designers, and operators navigating high-stakes career moves.
-              </p>
-              <div className="flex items-center gap-5 text-brand-subtle font-mono text-[11px]">
-                <span>0% AI Slop</span>
-                <span>·</span>
-                <span>Context-Aware</span>
-                <span>·</span>
-                <span>100% Free</span>
               </div>
             </div>
           </section>
@@ -923,22 +891,6 @@ export default function App() {
           </section>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-brand-border/70 py-6 px-4 sm:px-8 mt-auto bg-white">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-brand-muted gap-3">
-          <div className="flex items-center gap-3">
-            <span className="font-serif text-brand-black text-sm">Draft Outreach</span>
-            <span className="text-brand-subtle">·</span>
-            <span>A high-craft outreach tool for modern career builders</span>
-          </div>
-          <div className="flex items-center gap-4 text-brand-subtle text-[11px] font-mono">
-            <span>Monochrome Theme</span>
-            <span>·</span>
-            <span>100% Client-side Session Privacy</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
