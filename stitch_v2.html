@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Draftline — Editorial AI Cold Email &amp; Outreach Generator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              black: '#111111',
+              charcoal: '#222222',
+              muted: '#71717A',
+              subtle: '#A1A1AA',
+              border: '#E4E4E7',
+              lightborder: '#F4F4F5',
+              surface: '#FAFAFA',
+              white: '#FFFFFF',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #FFFFFF;
+      color: #111111;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection {
+      background-color: #111111;
+      color: #FFFFFF;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAFAFA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D4D4D8;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A1A1AA;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-pulse-soft {
+      animation: pulseSoft 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-brand-black flex flex-col font-sans selection:bg-brand-black selection:text-white antialiased">
+<!-- Minimal Brand Header -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-brand-border/70 transition-all">
+<div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<a class="text-xl sm:text-2xl font-serif tracking-tight font-normal text-brand-black hover:opacity-85 transition-opacity" href="#landing" onclick="switchView('landing')">
+          Draftline<span class="text-brand-muted font-mono text-[10px] ml-2 tracking-widest uppercase font-medium">v1.2</span>
+</a>
+</div>
+<nav class="flex items-center gap-4 sm:gap-6">
+<div class="hidden sm:flex items-center text-xs tracking-wider font-mono text-brand-muted uppercase gap-4">
+<span class="hover:text-brand-black cursor-pointer transition-colors" onclick="switchView('landing')">System Overview</span>
+<span class="text-brand-border">/</span>
+<span class="hover:text-brand-black cursor-pointer transition-colors" onclick="loadSampleCase(); switchView('workspace');">Sample Dossier</span>
+</div>
+<button class="group inline-flex items-center gap-2 text-xs font-mono font-medium tracking-wider uppercase px-4 py-2 bg-brand-black text-white hover:bg-neutral-800 transition-all duration-200 border border-brand-black active:scale-[0.98]" id="header-cta" onclick="switchView('workspace')">
+<span id="header-cta-text">Open Studio</span>
+<svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" fill="none" id="header-cta-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+</svg>
+</button>
+</nav>
+</div>
+</header>
+<!-- MAIN CONTAINER (Hosts Landing & Workspace) -->
+<main class="flex-1 flex flex-col w-full">
+<!-- 1. EDITORIAL LANDING EXPERIENCE -->
+<section class="flex-1 flex flex-col justify-between mx-auto px-5 sm:px-8 py-10 sm:py-16 w-full transition-opacity duration-300 max-w-6xl" id="landing-section">
+<!-- Top Meta / Tagline badge -->
+<div class="pt-1 sm:pt-4">
+<div class="inline-flex items-center gap-2.5 text-[11px] font-mono tracking-widest uppercase text-brand-muted border-b border-brand-border pb-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-black"></span>
+<span>Context Synthesis Engine</span>
+<span class="text-brand-border">·</span>
+<span>Monochrome Integrity</span>
+<span class="text-brand-border">·</span>
+<span class="text-brand-black font-medium">Zero Generic Hype</span>
+</div>
+</div>
+<!-- Main Central Headline with System Architecture Showcase (No email template mockup) -->
+<div class="my-auto py-10 sm:py-14 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+<!-- Left Column: Editorial Value Proposition & CTA -->
+<div class="lg:col-span-6 flex flex-col justify-center">
+<h1 class="text-4xl sm:text-5xl md:text-6xl font-serif font-normal leading-[1.1] tracking-tight text-brand-black">
+            Every application deserves a <br class="hidden sm:inline"/>
+<span class="italic font-normal">better outreach.</span>
+</h1>
+<!-- Animated cycling value props -->
+<div class="mt-5 sm:mt-6 h-10 overflow-hidden flex items-center">
+<div class="transition-transform duration-500 ease-out text-base sm:text-xl text-brand-muted font-sans font-light" id="rotating-text-track" style="transform: translateY(0px);">
+<div class="h-10 flex items-center">Grounds outreach in verified technical feats.</div>
+<div class="h-10 flex items-center">Zero generic LinkedIn template clichés.</div>
+<div class="h-10 flex items-center">Bespoke hooks crafted to hiring roadmaps.</div>
+<div class="h-10 flex items-center">Precise, dignified prose that gets read.</div>
+</div>
+</div>
+<p class="mt-4 sm:mt-5 text-sm sm:text-base text-brand-muted font-normal leading-relaxed max-w-lg">
+            Synthesize bespoke cold emails, warm referrals, and interview follow-ups directly from your parsed resume and the team's live challenges. No fictional claims. No robotic fluff.
+          </p>
+<!-- CTA & Mini Proof -->
+<div class="mt-8 sm:mt-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+<button class="group inline-flex items-center justify-center gap-3 px-7 py-3.5 bg-brand-black text-white hover:bg-neutral-800 transition-all text-xs font-mono font-medium tracking-widest uppercase border border-brand-black shadow-sm active:scale-[0.98]" onclick="switchView('workspace')">
+<span>Launch Studio</span>
+<svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+</svg>
+</button>
+<button class="inline-flex items-center gap-2 text-xs font-mono text-brand-black hover:opacity-70 transition-opacity border-b border-brand-black pb-0.5 self-start sm:self-auto" onclick="loadSampleCase(); switchView('workspace');">
+<span>Inspect Sample Dossier</span>
+<span class="text-brand-muted">→</span>
+</button>
+</div>
+<!-- Micro specs under CTA -->
+<div class="mt-6 flex items-center gap-4 text-[11px] font-mono text-brand-subtle">
+<span>Client-side Privacy</span>
+<span>·</span>
+<span>PDF/DOCX Extractor</span>
+<span>·</span>
+<span>Tone Calibrator</span>
+</div>
+</div>
+<!-- Right Column: Editorial Architecture & Context Matching Pipeline (No Email Template) -->
+<div class="lg:col-span-6 w-full">
+<div class="border border-brand-border bg-white shadow-sm">
+<!-- Frame Header / Engine Status -->
+<div class="border-b border-brand-border/70 px-5 py-3 bg-brand-surface/80 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+<span class="font-mono text-[11px] text-brand-black font-medium tracking-wider uppercase">Synthesis Pipeline Architecture</span>
+</div>
+<div class="flex items-center gap-2 text-[10px] font-mono text-brand-muted">
+<span class="px-2 py-0.5 border border-brand-border bg-white text-brand-black font-medium">Model v1.2</span>
+</div>
+</div>
+<!-- Pipeline Breakdown Cards -->
+<div class="p-5 sm:p-6 space-y-4 bg-white">
+<!-- Step 1: Candidate Vector Ingestion -->
+<div class="border border-brand-border/70 p-4 bg-brand-surface/30 relative">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[10px] bg-brand-black text-white px-1.5 py-0.5 font-semibold">01</span>
+<span class="text-xs font-semibold text-brand-black tracking-tight">Candidate Baseline Parsing</span>
+</div>
+<span class="font-mono text-[10px] text-brand-muted">Resume Vector</span>
+</div>
+<p class="text-xs text-brand-muted leading-relaxed">
+                  Extracts quantified metrics, systems scaled, and tech stacks directly from your document without hallucinating degrees or fictional achievements.
+                </p>
+<div class="mt-2.5 flex flex-wrap gap-1.5">
+<span class="font-mono text-[10px] px-2 py-0.5 bg-white border border-brand-border text-brand-black">Storage Benchmarks</span>
+<span class="font-mono text-[10px] px-2 py-0.5 bg-white border border-brand-border text-brand-black">Go / C++ / Systems</span>
+<span class="font-mono text-[10px] px-2 py-0.5 bg-white border border-brand-border text-brand-black">Quantified Latency</span>
+</div>
+</div>
+<!-- Connecting Node Indicator -->
+<div class="flex items-center justify-center -my-1">
+<div class="h-5 w-[1px] bg-brand-border"></div>
+<span class="mx-2 font-mono text-[9px] uppercase tracking-widest text-brand-subtle">Intersects With</span>
+<div class="h-5 w-[1px] bg-brand-border"></div>
+</div>
+<!-- Step 2: Opportunity Analysis -->
+<div class="border border-brand-border/70 p-4 bg-brand-surface/30">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[10px] bg-brand-black text-white px-1.5 py-0.5 font-semibold">02</span>
+<span class="text-xs font-semibold text-brand-black tracking-tight">Target Opportunity Context</span>
+</div>
+<span class="font-mono text-[10px] text-brand-muted">Role &amp; Team Specs</span>
+</div>
+<p class="text-xs text-brand-muted leading-relaxed">
+                  Pinpoints high-priority team initiatives, architecture challenges, and recipient domain for razor-sharp hooks.
+                </p>
+<div class="mt-2.5 flex flex-wrap gap-1.5">
+<span class="font-mono text-[10px] px-2 py-0.5 bg-white border border-brand-border text-brand-black">Linear Infrastructure</span>
+<span class="font-mono text-[10px] px-2 py-0.5 bg-white border border-brand-border text-brand-black">Sync Engines</span>
+<span class="font-mono text-[10px] px-2 py-0.5 bg-white border border-brand-border text-brand-black">Client-side SQLite</span>
+</div>
+</div>
+<!-- Connecting Node Indicator -->
+<div class="flex items-center justify-center -my-1">
+<div class="h-5 w-[1px] bg-brand-border"></div>
+<span class="mx-2 font-mono text-[9px] uppercase tracking-widest text-brand-subtle">Generates</span>
+<div class="h-5 w-[1px] bg-brand-border"></div>
+</div>
+<!-- Step 3: Synthesis Output Integrity -->
+<div class="border border-brand-black bg-brand-black text-white p-4">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="font-mono text-[10px] bg-white text-brand-black px-1.5 py-0.5 font-bold">03</span>
+<span class="text-xs font-semibold tracking-tight text-white">Editorial Synthesis Output</span>
+</div>
+<span class="font-mono text-[10px] text-brand-subtle">Ready in &lt; 2s</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-1 border-t border-neutral-700 mt-2 text-center">
+<div>
+<div class="font-mono text-sm font-semibold text-white">0%</div>
+<div class="text-[9px] uppercase tracking-wider text-neutral-400">Generic Filler</div>
+</div>
+<div>
+<div class="font-mono text-sm font-semibold text-white">100%</div>
+<div class="text-[9px] uppercase tracking-wider text-neutral-400">Verified Facts</div>
+</div>
+<div>
+<div class="font-mono text-sm font-semibold text-white">4 Modes</div>
+<div class="text-[9px] uppercase tracking-wider text-neutral-400">Tone Control</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card Footer / Interactive Trigger -->
+<div class="border-t border-brand-border/70 px-5 py-3 bg-brand-surface/40 flex items-center justify-between text-[11px] font-mono text-brand-muted">
+<span class="flex items-center gap-1.5 text-brand-black">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-black"></span>
+<span>Active Workspace Ready</span>
+</span>
+<button class="text-brand-black hover:underline uppercase tracking-wider font-semibold text-[10px]" onclick="loadSampleCase(); switchView('workspace');">
+                Load In Studio →
+              </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Restrained Supporting Details -->
+<div class="border-t border-brand-border/60 pt-6 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-brand-muted gap-4">
+<p class="max-w-md font-light">
+          Built specifically for students, graduates, and early-career engineers, designers, and operators navigating high-stakes career moves.
+        </p>
+<div class="flex items-center gap-5 text-brand-subtle font-mono text-[11px]">
+<span>0% AI Slop</span>
+<span>·</span>
+<span>Context-Aware</span>
+<span>·</span>
+<span>100% Free</span>
+</div>
+</div>
+</section>
+<!-- 2. WORKSPACE EXPERIENCE (Two-panel Desktop, Stacked Mobile) -->
+<section class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10 flex-col transition-opacity duration-300 hidden" id="workspace-section">
+<!-- Workspace Sub-Header & Breadcrumb -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-brand-border/70 pb-5 mb-8 gap-4">
+<div>
+<div class="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-subtle mb-1">
+<button class="hover:text-brand-black transition-colors underline decoration-dotted" onclick="switchView('landing')">Overview</button>
+<span>/</span>
+<span class="text-brand-black font-semibold">Generator Studio</span>
+</div>
+<h2 class="text-2xl sm:text-3xl font-serif text-brand-black">Cold Outreach Studio</h2>
+</div>
+<div class="flex items-center gap-2.5 font-mono">
+<button class="text-xs px-3.5 py-1.5 border border-brand-border hover:border-brand-black hover:bg-brand-surface text-brand-black transition-colors" onclick="loadSampleCase()">
+            Load Sample Profile
+          </button>
+<button class="text-xs px-3 py-1.5 text-brand-muted hover:text-brand-black transition-colors" onclick="resetAllFields()">
+            Clear All
+          </button>
+</div>
+</div>
+<!-- THE DUAL-PANEL WORKSPACE GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+<!-- ================= LEFT PANEL: RESUME & BACKGROUND ================= -->
+<div class="border border-brand-border bg-white p-5 sm:p-7 flex flex-col space-y-6">
+<div class="border-b border-brand-lightborder pb-4">
+<div class="flex items-center justify-between">
+<span class="font-mono text-[10px] tracking-widest text-brand-muted uppercase">Panel 01</span>
+<span class="text-[11px] font-mono text-brand-subtle" id="extraction-status">Ready to parse</span>
+</div>
+<h3 class="text-lg font-serif mt-1 text-brand-black">Your Background</h3>
+<p class="text-xs text-brand-muted mt-0.5">Give your email the authentic context it needs.</p>
+</div>
+<!-- Resume Upload Dropzone -->
+<div>
+<label class="block text-xs font-mono uppercase tracking-wider text-brand-muted mb-2">Resume Upload (PDF / DOCX)</label>
+<div class="relative border border-dashed border-brand-border hover:border-brand-black transition-colors p-6 sm:p-8 text-center bg-brand-surface/40 cursor-pointer group" id="dropzone" ondragleave="handleDragLeave(event)" ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+<input accept=".pdf,.doc,.docx,.txt" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" id="resume-file-input" onchange="handleFileSelect(event)" type="file"/>
+<div class="flex flex-col items-center" id="dropzone-idle">
+<svg class="w-8 h-8 text-brand-muted group-hover:text-brand-black transition-colors stroke-[1.25] mb-3" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<div class="text-xs font-medium text-brand-black">
+<span class="underline underline-offset-2">Click to browse</span> or drag and drop
+                </div>
+<div class="text-[11px] text-brand-muted mt-1 font-mono">
+                  PDF or DOCX (max 10MB)
+                </div>
+</div>
+<!-- Uploaded state preview (Hidden initially) -->
+<div class="hidden flex-col items-center" id="dropzone-uploaded">
+<div class="w-9 h-9 rounded-full bg-brand-black text-white flex items-center justify-center mb-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="text-xs font-semibold text-brand-black max-w-[220px] truncate" id="uploaded-filename">resume_jordan_lee.pdf</div>
+<div class="text-[10px] text-brand-muted mt-0.5 font-mono" id="uploaded-filesize">342 KB · Verified</div>
+<div class="flex items-center gap-3 mt-3 font-mono text-[11px]">
+<button class="text-brand-muted hover:text-red-600 underline" onclick="clearUploadedFile(event)" type="button">Remove</button>
+<span class="text-brand-border">|</span>
+<button class="text-brand-black underline" type="button">Replace</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Structured Extracted / Manual Profile Fields -->
+<div class="space-y-4 pt-1">
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Your Full Name</label>
+<input class="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors" id="cand-name" placeholder="e.g. Jordan Lee" type="text"/>
+</div>
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Current Role / Status</label>
+<input class="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors" id="cand-role" placeholder="e.g. B.S. Computer Science @ UC Berkeley (May 2025)" type="text"/>
+</div>
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Key Experience &amp; Quantified Wins</label>
+<textarea class="w-full text-xs p-3 border border-brand-border focus:border-brand-black focus:outline-none bg-white resize-none transition-colors leading-relaxed" id="cand-exp" placeholder="e.g. Scaled distributed worker nodes reducing latency by 28%. Built open-source cache engine in Go with 94k ops/sec." rows="3"></textarea>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Key Skills / Stack</label>
+<input class="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors" id="cand-skills" placeholder="e.g. Go, Rust, Distributed Systems" type="text"/>
+</div>
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Links / Portfolio (Optional)</label>
+<input class="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors" id="cand-link" placeholder="e.g. github.com/jordanlee" type="text"/>
+</div>
+</div>
+</div>
+<div class="text-[11px] text-brand-subtle italic border-t border-brand-lightborder pt-3">
+            Note: Draftline never invents fictional metrics or credentials. Only verifiable candidate inputs are referenced.
+          </div>
+</div>
+<!-- ================= RIGHT PANEL: OPPORTUNITY & CONTEXT ================= -->
+<div class="border border-brand-border bg-white p-5 sm:p-7 flex flex-col space-y-6">
+<div class="border-b border-brand-lightborder pb-4">
+<div class="flex items-center justify-between">
+<span class="font-mono text-[10px] tracking-widest text-brand-muted uppercase">Panel 02</span>
+<span class="text-[11px] font-mono text-brand-subtle">Target Opportunity</span>
+</div>
+<h3 class="text-lg font-serif mt-1 text-brand-black">The Opportunity</h3>
+<p class="text-xs text-brand-muted mt-0.5">Tell us who you're reaching out to and what you're targeting.</p>
+</div>
+<!-- Email Type Selector (Segmented Grid) -->
+<div>
+<label class="block text-xs font-mono uppercase tracking-wider text-brand-muted mb-2">Outreach Type</label>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+<button class="type-btn px-2.5 py-2 text-left border text-[11px] transition-all border-brand-black bg-brand-black text-white font-medium" onclick="selectType(this, 'Cold email for a job opportunity')" type="button">
+                Cold Outreach
+              </button>
+<button class="type-btn px-2.5 py-2 text-left border border-brand-border hover:border-brand-black text-brand-black text-[11px] transition-all" onclick="selectType(this, 'Job application email')" type="button">
+                Direct Application
+              </button>
+<button class="type-btn px-2.5 py-2 text-left border border-brand-border hover:border-brand-black text-brand-black text-[11px] transition-all" onclick="selectType(this, 'Follow-up after applying')" type="button">
+                Application Follow-up
+              </button>
+<button class="type-btn px-2.5 py-2 text-left border hover:border-brand-black text-brand-black text-[11px] transition-all border-brand-border" onclick="selectType(this, 'Recruiter follow-up')" type="button">
+                Recruiter Nudge
+              </button>
+<button class="type-btn px-2.5 py-2 text-left border hover:border-brand-black text-brand-black text-[11px] transition-all border-brand-border" onclick="selectType(this, 'Referral request')" type="button">
+                Alumni Referral
+              </button>
+<button class="type-btn px-2.5 py-2 text-left border hover:border-brand-black text-brand-black text-[11px] transition-all border-brand-border" onclick="selectType(this, 'Post-interview follow-up')" type="button">
+                Post-Interview Note
+              </button>
+</div>
+<input id="selected-email-type" type="hidden" value="Cold email for a job opportunity"/>
+</div>
+<!-- Job Details and Context Textarea -->
+<div class="space-y-3">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Company / Organization</label>
+<input class="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors" id="target-company" placeholder="e.g. Linear, Stripe, Ramp" type="text"/>
+</div>
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">Target Role Title</label>
+<input class="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors" id="target-role" placeholder="e.g. Software Engineer (Infra)" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-mono text-brand-muted mb-1">
+                Job Description, Post, or Role Requirements
+              </label>
+<textarea class="w-full text-xs p-3 border border-brand-border focus:border-brand-black focus:outline-none bg-white resize-none transition-colors leading-relaxed" id="target-jd" placeholder="Paste the job description, recruiter message, job post, or key challenges the team is solving..." rows="4"></textarea>
+</div>
+<!-- Optional Recruiter Details Accordion -->
+<details class="group border border-brand-lightborder p-2.5 bg-brand-surface/30">
+<summary class="text-[11px] font-medium text-brand-black cursor-pointer flex items-center justify-between select-none">
+<span>+ Specific Recruiter / Recipient Details (Optional)</span>
+<span class="text-brand-subtle group-open:rotate-180 transition-transform">▾</span>
+</summary>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 mt-2 border-t border-brand-lightborder">
+<div>
+<label class="block text-[10px] font-mono text-brand-muted mb-1">Recipient Name</label>
+<input class="w-full text-xs px-2.5 py-1.5 border border-brand-border focus:border-brand-black bg-white" id="target-recipient-name" placeholder="e.g. Sarah Jenkins (Head of Eng)" type="text"/>
+</div>
+<div>
+<label class="block text-[10px] font-mono text-brand-muted mb-1">Specific Context / Recent Project</label>
+<input class="w-full text-xs px-2.5 py-1.5 border border-brand-border focus:border-brand-black bg-white" id="target-specific-context" placeholder="e.g. Loved their recent blog post on sync architecture" type="text"/>
+</div>
+</div>
+</details>
+</div>
+<!-- Tone & Length Controls -->
+<div class="grid grid-cols-2 gap-4 border-t border-brand-lightborder pt-4">
+<div>
+<label class="block text-[11px] font-mono uppercase tracking-wider text-brand-muted mb-1.5">Tone</label>
+<div class="flex flex-wrap gap-1">
+<button class="tone-btn px-2.5 py-1 text-[11px] border border-brand-black bg-brand-black text-white" onclick="setTone(this, 'Professional')" type="button">Professional</button>
+<button class="tone-btn px-2.5 py-1 text-[11px] border border-brand-border hover:border-brand-black text-brand-black" onclick="setTone(this, 'Direct')" type="button">Direct</button>
+<button class="tone-btn px-2.5 py-1 text-[11px] border border-brand-border hover:border-brand-black text-brand-black" onclick="setTone(this, 'Warm')" type="button">Warm</button>
+<button class="tone-btn px-2.5 py-1 text-[11px] border border-brand-border hover:border-brand-black text-brand-black" onclick="setTone(this, 'Formal')" type="button">Formal</button>
+</div>
+<input id="selected-tone" type="hidden" value="Professional"/>
+</div>
+<div>
+<label class="block text-[11px] font-mono uppercase tracking-wider text-brand-muted mb-1.5">Length</label>
+<div class="flex flex-wrap gap-1">
+<button class="len-btn px-2.5 py-1 text-[11px] border border-brand-black bg-brand-black text-white" onclick="setLength(this, 'Concise')" type="button">Concise</button>
+<button class="len-btn px-2.5 py-1 text-[11px] border border-brand-border hover:border-brand-black text-brand-black" onclick="setLength(this, 'Standard')" type="button">Standard</button>
+<button class="len-btn px-2.5 py-1 text-[11px] border border-brand-border hover:border-brand-black text-brand-black" onclick="setLength(this, 'Detailed')" type="button">Detailed</button>
+</div>
+<input id="selected-length" type="hidden" value="Concise"/>
+</div>
+</div>
+</div>
+</div>
+<!-- PRIMARY GENERATION ACTION BAR -->
+<div class="mt-8 flex flex-col sm:flex-row items-center justify-between border-t border-brand-border pt-6 gap-4">
+<div class="text-xs text-brand-muted flex items-center gap-2 font-mono">
+<span class="w-2 h-2 rounded-full bg-brand-black"></span>
+<span>Draftline Engine: Evaluates candidate-opportunity fit without boilerplate clichés.</span>
+</div>
+<button class="w-full sm:w-auto group inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-brand-black text-white hover:bg-neutral-800 transition-all text-xs font-mono font-medium tracking-widest uppercase border border-brand-black shadow-sm active:scale-[0.99]" id="generate-btn" onclick="generateEmail()">
+<span id="generate-btn-label">Generate Tailored Email</span>
+<svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" id="generate-btn-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+</svg>
+</button>
+</div>
+<!-- GENERATION LOADING STATUS (Toggled dynamically) -->
+<div class="hidden mt-6 p-6 border border-brand-border bg-brand-surface/70 text-center animate-pulse-soft" id="generation-loader">
+<div class="inline-flex items-center gap-3 text-xs uppercase tracking-widest font-mono text-brand-black">
+<span class="w-2 h-2 rounded-full bg-brand-black animate-ping"></span>
+<span id="loader-status-text">Synthesizing candidate background with opportunity requirements...</span>
+</div>
+</div>
+<!-- ERROR STATE CONTAINER (Hidden by default) -->
+<div class="hidden mt-6 p-4 border border-brand-black bg-brand-surface text-xs text-brand-black flex items-start justify-between" id="error-banner">
+<div class="flex items-center gap-2">
+<span class="font-bold">Notice:</span>
+<span id="error-message">Please provide at least a candidate name and target company to generate context.</span>
+</div>
+<button class="text-brand-muted hover:text-black font-mono" onclick="document.getElementById('error-banner').classList.add('hidden')">✕</button>
+</div>
+<!-- ================= 3. GENERATED RESULT VIEWPORT ================= -->
+<div class="hidden mt-10 border border-brand-border bg-white transition-all" id="result-container">
+<!-- Results Top Bar -->
+<div class="border-b border-brand-border px-5 py-3.5 bg-brand-surface/40 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="font-serif text-lg text-brand-black">Generated Result</span>
+<span class="text-[10px] font-mono uppercase px-2 py-0.5 border border-brand-border bg-white text-brand-muted" id="result-type-badge">Cold Outreach</span>
+<span class="text-[10px] font-mono text-brand-subtle" id="result-word-count">~148 words</span>
+</div>
+<div class="flex items-center gap-2 font-mono">
+<button class="inline-flex items-center gap-1.5 text-xs px-3.5 py-1.5 border border-brand-border hover:border-brand-black bg-white text-brand-black font-medium transition-colors" id="copy-btn" onclick="copyToClipboard()">
+<svg class="w-3.5 h-3.5" fill="none" id="copy-icon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+</svg>
+<span id="copy-text">Copy Email</span>
+</button>
+<button class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 border border-brand-border hover:border-brand-black bg-white text-brand-muted hover:text-brand-black transition-colors" onclick="generateEmail(true)">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+</svg>
+<span>Regenerate Variant</span>
+</button>
+</div>
+</div>
+<!-- Subject Line -->
+<div class="px-6 py-4 border-b border-brand-border/60 flex flex-col sm:flex-row sm:items-center gap-2 bg-white">
+<span class="text-xs font-mono uppercase tracking-wider text-brand-muted w-20 flex-shrink-0">Subject:</span>
+<input class="flex-1 font-medium text-sm text-brand-black focus:outline-none focus:bg-brand-surface/40 px-1 py-0.5" id="result-subject" type="text" value="Jordan Lee — Distributed Systems engineer &amp; UC Berkeley senior"/>
+</div>
+<!-- Editable Email Body (Paper-like Typography) -->
+<div class="p-6 sm:p-8 bg-white">
+<div class="text-xs text-brand-muted font-mono mb-2 uppercase tracking-wider flex items-center justify-between">
+<span>Email Composition (Click to edit inline)</span>
+<span class="text-[10px] text-brand-subtle">No generic filler detected</span>
+</div>
+<textarea class="w-full text-sm leading-relaxed sm:leading-loose text-brand-black font-sans focus:outline-none focus:ring-0 border-0 p-0 resize-y selection:bg-brand-black selection:text-white bg-transparent" id="result-body" rows="12" spellcheck="false"></textarea>
+</div>
+<!-- Quality Metrics / Integrity Checklist Footnote -->
+<div class="border-t border-brand-border/60 px-6 py-3.5 bg-brand-surface/40 flex flex-wrap items-center justify-between text-[11px] text-brand-muted gap-3">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5 text-brand-black">
+<svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              Zero "writing to express my excitement"
+            </span>
+<span class="flex items-center gap-1.5 text-brand-black">
+<svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              Direct impact hook included
+            </span>
+</div>
+<div class="font-mono text-brand-subtle">
+            Ready for sending
+          </div>
+</div>
+</div>
+</section>
+</main>
+<!-- Editorial Minimal Footer -->
+<footer class="border-t border-brand-border/70 py-6 px-5 sm:px-8 mt-auto bg-white">
+<div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-brand-muted gap-3">
+<div class="flex items-center gap-3">
+<span class="font-serif text-brand-black text-sm">Draftline</span>
+<span class="text-brand-subtle">·</span>
+<span>A high-craft outreach tool for modern career builders</span>
+</div>
+<div class="flex items-center gap-4 text-brand-subtle text-[11px] font-mono">
+<span>Monochrome Theme</span>
+<span>·</span>
+<span>100% Client-side Session Privacy</span>
+</div>
+</div>
+</footer>
+<!-- SCRIPT LOGIC (Interactive Transitions, Upload Parsing, Template Synthesis) -->
+<script>
+    // Rotating headline text animation
+    let rotatingIndex = 0;
+    const totalRotating = 4;
+    setInterval(() => {
+      rotatingIndex = (rotatingIndex + 1) % totalRotating;
+      const track = document.getElementById('rotating-text-track');
+      if (track) {
+        track.style.transform = `translateY(-${rotatingIndex * 40}px)`;
+      }
+    }, 3200);
+
+    // Switch between Landing View and Generator Workspace
+    function switchView(view) {
+      const landing = document.getElementById('landing-section');
+      const workspace = document.getElementById('workspace-section');
+      const headerCtaText = document.getElementById('header-cta-text');
+      const headerCta = document.getElementById('header-cta');
+
+      if (view === 'workspace') {
+        landing.classList.add('hidden');
+        workspace.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (headerCtaText) {
+          headerCtaText.textContent = 'Back to Overview';
+          headerCta.setAttribute('onclick', "switchView('landing')");
+        }
+      } else {
+        workspace.classList.add('hidden');
+        landing.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (headerCtaText) {
+          headerCtaText.textContent = 'Open Studio';
+          headerCta.setAttribute('onclick', "switchView('workspace')");
+        }
+      }
+    }
+
+    // Drag and Drop & File Upload handling
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('dropzone').classList.add('border-brand-black', 'bg-brand-surface');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('dropzone').classList.remove('border-brand-black', 'bg-brand-surface');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('dropzone').classList.remove('border-brand-black', 'bg-brand-surface');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        processUploadedFile(files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        processUploadedFile(files[0]);
+      }
+    }
+
+    function processUploadedFile(file) {
+      const idle = document.getElementById('dropzone-idle');
+      const uploaded = document.getElementById('dropzone-uploaded');
+      const filenameEl = document.getElementById('uploaded-filename');
+      const filesizeEl = document.getElementById('uploaded-filesize');
+      const statusEl = document.getElementById('extraction-status');
+
+      filenameEl.textContent = file.name;
+      const sizeKB = Math.round(file.size / 1024);
+      filesizeEl.textContent = `${sizeKB} KB · Extracted`;
+
+      idle.classList.add('hidden');
+      uploaded.classList.remove('hidden');
+      uploaded.classList.add('flex');
+
+      statusEl.textContent = 'Parsing completed';
+      statusEl.classList.remove('text-brand-muted', 'text-brand-subtle');
+      statusEl.classList.add('text-brand-black', 'font-medium');
+
+      // Autofill fields if currently empty
+      if (!document.getElementById('cand-name').value) {
+        document.getElementById('cand-name').value = "Jordan Lee";
+        document.getElementById('cand-role').value = "B.S. Computer Science @ UC Berkeley (May 2025)";
+        document.getElementById('cand-exp').value = "Previous SWE Intern at Databricks (optimized query latency by 32% across distributed Spark workers). Built open-source Redis-compatible cache engine in Go with 1.4k GitHub stars.";
+        document.getElementById('cand-skills').value = "Go, C++, TypeScript, Kubernetes, Distributed Systems, SQL";
+        document.getElementById('cand-link').value = "github.com/jordan-lee-dev";
+      }
+    }
+
+    function clearUploadedFile(e) {
+      e.stopPropagation();
+      document.getElementById('dropzone-idle').classList.remove('hidden');
+      document.getElementById('dropzone-uploaded').classList.add('hidden');
+      document.getElementById('dropzone-uploaded').classList.remove('flex');
+      document.getElementById('resume-file-input').value = "";
+      document.getElementById('extraction-status').textContent = 'Ready to parse';
+    }
+
+    // Load High-Quality Sample Case
+    function loadSampleCase() {
+      // Ensure workspace is visible
+      switchView('workspace');
+
+      // Simulate file upload UI
+      document.getElementById('dropzone-idle').classList.add('hidden');
+      const uploaded = document.getElementById('dropzone-uploaded');
+      uploaded.classList.remove('hidden');
+      uploaded.classList.add('flex');
+      document.getElementById('uploaded-filename').textContent = "Jordan_Lee_Resume_2025.pdf";
+      document.getElementById('uploaded-filesize').textContent = "184 KB · Verified";
+      document.getElementById('extraction-status').textContent = 'Sample Dossier Loaded';
+
+      // Left panel
+      document.getElementById('cand-name').value = "Jordan Lee";
+      document.getElementById('cand-role').value = "B.S. Computer Science, UC Berkeley (Class of 2025)";
+      document.getElementById('cand-exp').value = "• SWE Intern @ Databricks: Scaled shuffle storage engine, dropping IOPS bottlenecks by 28%.\n• Built 'HyperLog-KV': High-throughput distributed key-value store in Go (benchmarked at 94k ops/sec).\n• Lead Infra Lead @ Cal Hacks.";
+      document.getElementById('cand-skills').value = "Go, Rust, Distributed Systems, gRPC, PostgreSQL, Docker";
+      document.getElementById('cand-link').value = "github.com/jordanlee · jordanlee.fyi";
+
+      // Right panel
+      document.getElementById('target-company').value = "Linear";
+      document.getElementById('target-role').value = "Founding Infrastructure / Backend Engineer";
+      document.getElementById('target-jd').value = "Looking for engineers passionate about exceptional craft, real-time sync architectures, low-latency web protocols, and resilient infrastructure. You care about milliseconds and crisp systems.";
+      document.getElementById('target-recipient-name').value = "Tuomas Artman (Co-founder / Eng)";
+      document.getElementById('target-specific-context').value = "Read Linear's sync engine engineering post on operational transforms and client-side SQLite.";
+    }
+
+    function resetAllFields() {
+      clearUploadedFile({ stopPropagation: () => {} });
+      document.getElementById('cand-name').value = '';
+      document.getElementById('cand-role').value = '';
+      document.getElementById('cand-exp').value = '';
+      document.getElementById('cand-skills').value = '';
+      document.getElementById('cand-link').value = '';
+      document.getElementById('target-company').value = '';
+      document.getElementById('target-role').value = '';
+      document.getElementById('target-jd').value = '';
+      document.getElementById('target-recipient-name').value = '';
+      document.getElementById('target-specific-context').value = '';
+      document.getElementById('result-container').classList.add('hidden');
+      document.getElementById('error-banner').classList.add('hidden');
+    }
+
+    // Selector handling
+    function selectType(btn, typeValue) {
+      document.querySelectorAll('.type-btn').forEach(b => {
+        b.classList.remove('border-brand-black', 'bg-brand-black', 'text-white', 'font-medium');
+        b.classList.add('border-brand-border', 'text-brand-black');
+      });
+      btn.classList.add('border-brand-black', 'bg-brand-black', 'text-white', 'font-medium');
+      btn.classList.remove('border-brand-border');
+      document.getElementById('selected-email-type').value = typeValue;
+    }
+
+    function setTone(btn, toneValue) {
+      document.querySelectorAll('.tone-btn').forEach(b => {
+        b.classList.remove('border-brand-black', 'bg-brand-black', 'text-white');
+        b.classList.add('border-brand-border', 'text-brand-black');
+      });
+      btn.classList.add('border-brand-black', 'bg-brand-black', 'text-white');
+      btn.classList.remove('border-brand-border');
+      document.getElementById('selected-tone').value = toneValue;
+    }
+
+    function setLength(btn, lengthValue) {
+      document.querySelectorAll('.len-btn').forEach(b => {
+        b.classList.remove('border-brand-black', 'bg-brand-black', 'text-white');
+        b.classList.add('border-brand-border', 'text-brand-black');
+      });
+      btn.classList.add('border-brand-black', 'bg-brand-black', 'text-white');
+      btn.classList.remove('border-brand-border');
+      document.getElementById('selected-length').value = lengthValue;
+    }
+
+    // Generate Tailored Email Synthesis Engine
+    function generateEmail(isRegen = false) {
+      const name = document.getElementById('cand-name').value.trim() || 'Jordan Lee';
+      const role = document.getElementById('cand-role').value.trim() || 'Software Engineer';
+      const exp = document.getElementById('cand-exp').value.trim();
+      const skills = document.getElementById('cand-skills').value.trim();
+      const links = document.getElementById('cand-link').value.trim();
+      
+      const company = document.getElementById('target-company').value.trim() || 'your team';
+      const targetRole = document.getElementById('target-role').value.trim() || 'Engineering';
+      const jd = document.getElementById('target-jd').value.trim();
+      const recipient = document.getElementById('target-recipient-name').value.trim();
+      const context = document.getElementById('target-specific-context').value.trim();
+      
+      const type = document.getElementById('selected-email-type').value;
+      const tone = document.getElementById('selected-tone').value;
+      const length = document.getElementById('selected-length').value;
+
+      // Validate minimally
+      const errorBanner = document.getElementById('error-banner');
+      if (!name && !company) {
+        errorBanner.classList.remove('hidden');
+        document.getElementById('error-message').textContent = 'Please enter at least a Candidate Name and Target Company to ground the outreach.';
+        return;
+      }
+      errorBanner.classList.add('hidden');
+
+      // Show loader
+      const loader = document.getElementById('generation-loader');
+      const resultContainer = document.getElementById('result-container');
+      const genBtn = document.getElementById('generate-btn');
+      
+      loader.classList.remove('hidden');
+      genBtn.disabled = true;
+      genBtn.classList.add('opacity-70');
+      
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        genBtn.disabled = false;
+        genBtn.classList.remove('opacity-70');
+        
+        // Synthesize dynamic email based on user inputs
+        renderSynthesis({
+          name, role, exp, skills, links, company, targetRole, jd, recipient, context, type, tone, length, isRegen
+        });
+
+        resultContainer.classList.remove('hidden');
+        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 600);
+    }
+
+    function renderSynthesis(data) {
+      const salutation = data.recipient ? `Hi ${data.recipient.split(' ')[0]},` : `Hi ${data.company} team,`;
+      let subject = "";
+      let body = "";
+
+      const firstSkill = data.skills ? data.skills.split(',')[0].trim() : 'backend systems';
+      const cleanExpSnippet = data.exp ? data.exp.split('\n')[0].replace(/^[•\-\*]\s*/, '') : `scaling low-latency distributed tools`;
+
+      if (data.type === 'Cold email for a job opportunity') {
+        subject = data.isRegen 
+          ? `${data.name} // ${data.targetRole} background & interest in ${data.company}`
+          : `${data.name} — ${data.role} interested in ${data.targetRole}`;
+        
+        body = `${salutation}
+
+I've been closely following ${data.company}'s work${data.context ? `—especially ${data.context}` : ''}. I'm reaching out directly because my background aligns with the engineering challenges your team is solving around ${data.targetRole}.
+
+Currently, I'm ${data.role}. Recently, I focused on ${cleanExpSnippet}. Working deeply in ${firstSkill}, I prioritize performance, mechanical sympathy, and clean interfaces over corporate bloat.
+
+${data.jd ? `Looking at your focus on ${data.company}'s current trajectory, I'd love to contribute immediately without an extended onboarding ramp.` : `I'm very drawn to how ${data.company} prioritizes product craft and velocity.`}
+
+If your team has 10 minutes next week, I'd appreciate the chance to discuss how my technical experience could support ${data.company}'s roadmap.
+
+Best regards,
+
+${data.name}
+${data.links ? data.links : ''}
+${data.role}`;
+
+      } else if (data.type === 'Job application email') {
+        subject = `Application: ${data.targetRole} — ${data.name}`;
+        body = `${salutation}
+
+I recently submitted my application for the ${data.targetRole} role at ${data.company} and wanted to share direct context on why this role is an immediate fit.
+
+As ${data.role}, my technical foundation is built on ${data.skills || 'core engineering fundamentals'}. In my recent work:
+• ${cleanExpSnippet}
+
+I admire ${data.company}'s standard of execution${data.context ? ` and specifically ${data.context}` : ''}. My portfolio and detailed code contributions are linked below.
+
+Thank you for your time and consideration.
+
+Best,
+
+${data.name}
+${data.links ? data.links : ''}`;
+
+      } else if (data.type === 'Follow-up after applying') {
+        subject = `Following up: ${data.targetRole} application — ${data.name}`;
+        body = `${salutation}
+
+I'm following up on my application for the ${data.targetRole} opening at ${data.company} from last week.
+
+Given ${data.company}'s emphasis on high execution speed, I wanted to re-highlight that my background in ${firstSkill} aligns directly with the role requirements. In my most recent work, I delivered:
+• ${cleanExpSnippet}
+
+I know your team is reviewing many candidates, so I kept this brief. Please let me know if any additional code samples or references would be helpful.
+
+Best regards,
+
+${data.name}`;
+
+      } else if (data.type === 'Referral request') {
+        subject = `Quick question regarding ${data.company}'s engineering team`;
+        body = `${salutation}
+
+I came across your profile and noticed your work on the engineering team at ${data.company}. 
+
+I am a ${data.role} preparing to apply for the ${data.targetRole} opening. Having built ${cleanExpSnippet}, I feel a strong alignment with ${data.company}'s technical principles.
+
+Would you be open to a 5-minute chat or brief advice on what stands out to the hiring team at ${data.company}? I'd be grateful for any insight you might have.
+
+Thank you,
+
+${data.name}
+${data.links ? data.links : ''}`;
+
+      } else {
+        subject = `Thank you — ${data.targetRole} discussion (${data.name})`;
+        body = `${salutation}
+
+Thank you for taking the time to speak with me today about ${data.company} and the ${data.targetRole} position.
+
+Our discussion regarding ${data.context || 'the team challenges and high engineering bar'} further reinforced my enthusiasm for the role. Based on my work ${cleanExpSnippet}, I'm confident I can make an immediate, reliable contribution.
+
+Looking forward to next steps.
+
+Sincerely,
+
+${data.name}`;
+      }
+
+      document.getElementById('result-subject').value = subject;
+      document.getElementById('result-body').value = body;
+      document.getElementById('result-type-badge').textContent = data.type;
+      
+      const words = body.trim().split(/\s+/).length;
+      document.getElementById('result-word-count').textContent = `~${words} words`;
+    }
+
+    // Copy to clipboard with instant micro-interaction
+    function copyToClipboard() {
+      const subject = document.getElementById('result-subject').value;
+      const body = document.getElementById('result-body').value;
+      const fullEmail = `Subject: ${subject}\n\n${body}`;
+
+      navigator.clipboard.writeText(fullEmail).then(() => {
+        const copyBtn = document.getElementById('copy-btn');
+        const copyText = document.getElementById('copy-text');
+        const originalText = copyText.textContent;
+
+        copyText.textContent = "Copied to Clipboard!";
+        copyBtn.classList.add('bg-brand-black', 'text-white', 'border-brand-black');
+        copyBtn.classList.remove('bg-white', 'text-brand-black');
+
+        setTimeout(() => {
+          copyText.textContent = originalText;
+          copyBtn.classList.remove('bg-brand-black', 'text-white', 'border-brand-black');
+          copyBtn.classList.add('bg-white', 'text-brand-black');
+        }, 1800);
+      });
+    }
+  </script>
+</body></html>
