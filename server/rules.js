@@ -61,7 +61,7 @@ export const STRONG_ACTION_VERBS = [
   "delivered", "orchestrated", "evaluated", "benchmarked"
 ];
 
-export const PLAYBOOK_SYSTEM_PROMPT = `You are the core intelligence engine of Draftline AI.
+export const PLAYBOOK_SYSTEM_PROMPT = `You are the core intelligence engine of Draft Outreach.
 Your purpose is to generate professional, polished, high-impact emails for job applications, recruiter outreach, and follow-ups.
 
 Strict adherence to the provided "Recruiter Outreach: Weak Words Guide" and "Job Application & Follow-up Email Playbook" is mandatory:

@@ -206,7 +206,7 @@ export default function App() {
       }
     } catch (err) {
       console.error(err);
-      setErrorMessage('Failed to connect to Draftline synthesis engine.');
+      setErrorMessage('Failed to connect to Draft Outreach synthesis engine.');
     } finally {
       setIsGenerating(false);
     }
@@ -235,8 +235,8 @@ export default function App() {
               }}
               className="text-xl sm:text-2xl font-serif tracking-tight font-normal text-brand-black hover:opacity-80 transition-opacity flex items-center gap-2"
             >
-              <img src="/logo.png" alt="Draftline Logo" className="w-6 h-6 object-contain" />
-              <span>Draftline</span>
+              <img src="/logo.png" alt="Draft Outreach Logo" className="w-6 h-6 object-contain" />
+              <span>Draft Outreach</span>
             </button>
           </div>
 
@@ -636,7 +636,7 @@ export default function App() {
                 </div>
 
                 <div className="text-[11px] text-brand-subtle italic border-t border-brand-lightborder pt-3">
-                  Note: Draftline never invents fictional metrics or credentials. Only verifiable candidate inputs are referenced.
+                  Note: Draft Outreach never invents fictional metrics or credentials. Only verifiable candidate inputs are referenced.
                 </div>
               </div>
 
@@ -793,7 +793,7 @@ export default function App() {
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-between border-t border-brand-border pt-6 gap-4">
               <div className="text-xs text-brand-muted flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-brand-black"></span>
-                <span>Draftline Engine: Evaluates candidate-opportunity fit without boilerplate clichés.</span>
+                <span>Draft Outreach Engine: Evaluates candidate-opportunity fit without boilerplate clichés.</span>
               </div>
 
               <button
@@ -928,7 +928,7 @@ export default function App() {
       <footer className="border-t border-brand-border/70 py-6 px-4 sm:px-8 mt-auto bg-white">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-brand-muted gap-3">
           <div className="flex items-center gap-3">
-            <span className="font-serif text-brand-black text-sm">Draftline</span>
+            <span className="font-serif text-brand-black text-sm">Draft Outreach</span>
             <span className="text-brand-subtle">·</span>
             <span>A high-craft outreach tool for modern career builders</span>
           </div>

@@ -1,6 +1,6 @@
-# Draftline AI — Editorial Cold Email & Outreach Generator
+# Draft Outreach — Editorial Cold Email & Outreach Generator
 
-Draftline is an evidence-led, high-craft cold email and job application outreach generator designed around the editorial principles of **specificity, verifiable impact, and zero boilerplate clichés**.
+Draft Outreach is an evidence-led, high-craft cold email and job application outreach generator designed around the editorial principles of **specificity, verifiable impact, and zero boilerplate clichés**.
 
 Built using React, Vite, Tailwind CSS, Express, and a resilient multi-tier LLM fallback architecture.
 

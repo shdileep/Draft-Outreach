@@ -26,7 +26,7 @@ const upload = multer({
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'Draftline AI Synthesis Engine' });
+  res.json({ status: 'ok', service: 'Draft Outreach AI Synthesis Engine' });
 });
 
 // Resume upload endpoint (Silent internal processing)
@@ -130,5 +130,5 @@ app.post('/api/generate', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`[Draftline Backend] API Server listening on port ${PORT}`);
+  console.log(`[Draft Outreach Backend] API Server listening on port ${PORT}`);
 });
