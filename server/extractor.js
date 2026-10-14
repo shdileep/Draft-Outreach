@@ -1,29 +1,63 @@
 import https from 'https';
 
 /**
- * Extract links from buffer (PDF /URI annotations) and plain text
+ * Extract hyperlinks from PDF parser annotations
  */
-export function extractLinks(buffer, text = '', html = '') {
+export async function extractPdfAnnotations(parser) {
   const links = {
     linkedin: '',
     github: '',
     portfolio: ''
   };
 
-  const foundUrls = new Set();
+  if (!parser || !parser.doc) return links;
 
-  // 1. Scan PDF binary buffer for /URI (http...)
-  if (buffer && Buffer.isBuffer(buffer)) {
-    const raw = buffer.toString('binary');
-    const uriRegex = /\/URI\s*\(([^)]+)\)/g;
-    let match;
-    while ((match = uriRegex.exec(raw)) !== null) {
-      const url = match[1].trim();
-      if (url.startsWith('http://') || url.startsWith('https://')) {
-        foundUrls.add(url);
+  try {
+    const numPages = parser.doc.numPages || 1;
+    for (let i = 1; i <= numPages; i++) {
+      const page = await parser.doc.getPage(i);
+      const annots = await page.getAnnotations();
+      if (!Array.isArray(annots)) continue;
+
+      for (const a of annots) {
+        const url = (a.url || a.unsafeUrl || '').trim();
+        if (!url || !url.startsWith('http')) continue;
+
+        if (/linkedin\.com\/in\//i.test(url) && !links.linkedin) {
+          links.linkedin = url.replace(/\/+$/, '');
+        } else if (/github\.com\//i.test(url) && !links.github) {
+          links.github = url.replace(/\/+$/, '');
+        } else if (!links.portfolio && !/adobe\.com|w3\.org|schema\.org|microsoft\.com|apple\.com/i.test(url)) {
+          links.portfolio = url.replace(/\/+$/, '');
+        }
       }
     }
+  } catch (err) {
+    console.warn('[PDF Annotations Warning]', err.message);
   }
+
+  return links;
+}
+
+/**
+ * Extract links from buffer, text, DOCX HTML, and PDF annotations
+ */
+export async function extractLinks(buffer, text = '', html = '', parser = null) {
+  const links = {
+    linkedin: '',
+    github: '',
+    portfolio: ''
+  };
+
+  // 1. Check PDF page annotations first (highest accuracy for clickable links in PDFs)
+  if (parser) {
+    const annotLinks = await extractPdfAnnotations(parser);
+    if (annotLinks.linkedin) links.linkedin = annotLinks.linkedin;
+    if (annotLinks.github) links.github = annotLinks.github;
+    if (annotLinks.portfolio) links.portfolio = annotLinks.portfolio;
+  }
+
+  const foundUrls = new Set();
 
   // 2. Scan DOCX HTML for <a href="...">
   if (html) {
@@ -48,7 +82,7 @@ export function extractLinks(buffer, text = '', html = '') {
     }
   }
 
-  // Classify URLs
+  // Classify found URLs if not already populated from PDF annotations
   for (const url of foundUrls) {
     if (/linkedin\.com\/in\//i.test(url) && !links.linkedin) {
       links.linkedin = url.replace(/\/+$/, '');
@@ -63,13 +97,13 @@ export function extractLinks(buffer, text = '', html = '') {
 }
 
 /**
- * Clean and format Name
+ * Clean and format Candidate Name to Title Case
  */
 function cleanName(raw) {
   if (!raw) return '';
   let name = raw.replace(/[|•·,].*$/, '').replace(/\b(resume|cv|curriculum vitae)\b/gi, '').trim();
-  // If ALL CAPS, convert to Title Case
-  if (name.length > 2 && name === name.toUpperCase()) {
+  // If ALL CAPS or mixed case, format to Title Case
+  if (name.length > 2 && (name === name.toUpperCase() || name === name.toLowerCase())) {
     name = name.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase());
   }
   return name.trim();
@@ -81,24 +115,22 @@ function cleanName(raw) {
 export function extractProfileWithHeuristics(text = '', links = {}, filename = '') {
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
 
-  // 1. Name
+  // 1. Candidate Full Name
   let name = '';
-  for (let i = 0; i < Math.min(lines.length, 8); i++) {
+  for (let i = 0; i < Math.min(lines.length, 6); i++) {
     const line = lines[i];
-    // Skip emails, phones, urls, short tokens, or known section headers
+    // Skip lines with email, phone, web urls, or standard headers
     if (/@/.test(line) || /https?:|\bgithub|\blinkedin\b|\.com\b/i.test(line)) continue;
     if (/\+?\d[\d\s\-()]{7,}\d/.test(line)) continue;
     if (/^(resume|curriculum vitae|summary|objective|skills|experience|education)$/i.test(line)) continue;
 
-    // A valid name is usually 2 to 4 words, between 3 and 45 chars
     const words = line.split(/\s+/);
-    if (words.length >= 1 && words.length <= 4 && line.length >= 3 && line.length <= 45 && !/[;{}[\]<>]/.test(line)) {
+    if (words.length >= 1 && words.length <= 4 && line.length >= 3 && line.length <= 40 && !/[;{}[\]<>]/.test(line)) {
       name = cleanName(line);
       break;
     }
   }
 
-  // Fallback: derive candidate name from filename (e.g., "Dileep_ GenAI Solutions Architect.pdf" -> "Dileep")
   if (!name && filename) {
     const base = filename.replace(/\.(pdf|docx?|txt)$/i, '');
     const candidatePart = base.split(/[_\-–|]/)[0]?.trim();
@@ -107,108 +139,96 @@ export function extractProfileWithHeuristics(text = '', links = {}, filename = '
     }
   }
 
-  // 2. Skills extraction from Skills Section
+  // 2. Technical Skills from Skills Section
   let skills = '';
-  const skillsHeaderRegex = /^(?:technical\s+skills|skills\s*(?:&|and)?\s*tools|core\s+competencies|key\s+skills|technologies|skills)\b[:\s]*$/i;
-  const nextHeaderRegex = /^(?:experience|professional\s+experience|work\s+history|projects|education|certifications|awards|summary)\b[:\s]*$/i;
+  const skillsHeaderIdx = lines.findIndex(l => /^(?:technical\s+skills|skills\s*(?:&|and)?\s*tools|core\s+competencies|key\s+skills|technologies|skills)\b[:\s]*$/i.test(l));
+  
+  if (skillsHeaderIdx !== -1) {
+    const nextSectionIdx = lines.findIndex((l, idx) => 
+      idx > skillsHeaderIdx && /^(?:(?:work\s+)?experience|professional\s+experience|work\s+history|projects|education|certifications|awards|summary)\b[:\s]*$/i.test(l)
+    );
 
-  let inSkills = false;
-  const extractedSkillLines = [];
+    const endIdx = nextSectionIdx !== -1 ? nextSectionIdx : Math.min(skillsHeaderIdx + 12, lines.length);
+    const skillLines = lines.slice(skillsHeaderIdx + 1, endIdx);
 
-  for (const line of lines) {
-    if (skillsHeaderRegex.test(line)) {
-      inSkills = true;
-      continue;
+    const cleanedItems = [];
+    for (const rawLine of skillLines) {
+      // Strip leading category labels e.g. "Languages:", "AI / ML:", "Backend / APIs:"
+      const content = rawLine.replace(/^[A-Za-z0-9\s/&+\-_]+:\s*/, '').trim();
+      if (!content) continue;
+      
+      content.split(/[,;•·|/]/)
+        .map(s => s.trim())
+        .filter(s => s.length >= 2 && s.length <= 40 && !/@|\.com|http/i.test(s))
+        .forEach(s => cleanedItems.push(s));
     }
-    if (inSkills) {
-      if (nextHeaderRegex.test(line)) {
-        inSkills = false;
-        break;
-      }
-      extractedSkillLines.push(line);
+
+    if (cleanedItems.length > 0) {
+      skills = Array.from(new Set(cleanedItems)).slice(0, 30).join(', ');
     }
   }
 
-  if (extractedSkillLines.length > 0) {
-    const rawSkillsStr = extractedSkillLines.join(' ')
-      .replace(/(?:languages|frameworks|libraries|databases|tools|cloud|devops|technologies|web\s+technologies|backend|frontend)\s*[:\-–]/gi, ', ')
-      .replace(/[•·*|/]/g, ', ');
-
-    const tokenSet = new Set();
-    rawSkillsStr.split(/[,;\n]/)
-      .map(s => s.trim())
-      .filter(s => s.length >= 2 && s.length <= 35 && !/@|\.com|http/i.test(s))
-      .forEach(s => tokenSet.add(s));
-
-    skills = Array.from(tokenSet).slice(0, 15).join(', ');
-  }
-
-  // If skills section was not labeled or empty, search known keywords
   if (!skills) {
     const commonKeywords = [
-      "Python", "FastAPI", "Django", "Node.js", "Express", "TypeScript", "JavaScript",
-      "React", "Next.js", "Go", "Golang", "Rust", "C++", "Java", "Spring Boot",
-      "PostgreSQL", "MySQL", "MongoDB", "Redis", "SQLite", "Docker", "Kubernetes",
-      "gRPC", "REST APIs", "GraphQL", "LLMs", "RAG", "Embeddings", "PyTorch", "AWS",
-      "Azure", "GCP", "LangChain", "LlamaIndex", "Vector DBs", "Git", "CI/CD"
+      "Python", "SQL", "Java", "LangChain", "LangGraph", "RAG", "Vector Databases",
+      "PyTorch", "Hugging Face", "Agentic AI", "LLMs", "FastAPI", "Django", "Node.js",
+      "Spring Boot", "React.js", "Next.js", "PostgreSQL", "Docker", "AWS", "Git"
     ];
     const found = commonKeywords.filter(k => new RegExp(`\\b${k.replace(/[+]/g, '\\+')}\\b`, 'i').test(text));
-    if (found.length > 0) {
-      skills = found.slice(0, 14).join(', ');
-    }
+    if (found.length > 0) skills = found.join(', ');
   }
 
   // 3. Current Role and Organization
   let currentRole = '';
-  // Try to find in experience section or top lines
-  // Match "Role at Company" or "Role | Company" or "Role, Company"
-  const roleOrgPattern = /([A-Za-z\s]+?(?:Engineer|Developer|Architect|Lead|Manager|Specialist|Consultant|Scientist|Programmer))\s*(?:at|@|\||,|–|-)\s*([A-Za-z0-9\s&]+?)(?=\s*(?:\(|\||\d{4}|Present|Current|\n|$))/i;
-  
-  for (const line of lines) {
-    const m = line.match(roleOrgPattern);
-    if (m && m[1] && m[2]) {
-      const r = m[1].trim();
-      const o = m[2].trim();
-      if (r.length >= 4 && r.length <= 40 && o.length >= 2 && o.length <= 35 && !/present|year|month/i.test(o)) {
-        currentRole = `${r} at ${o}`;
-        break;
-      }
+  const expIdx = lines.findIndex(l => /^(?:(?:work\s+)?experience|professional\s+experience|work\s+history|employment\s+history)\b[:\s]*$/i.test(l));
+
+  if (expIdx !== -1 && expIdx + 1 < lines.length) {
+    // Look at the top entry under Experience
+    const jobLine = lines[expIdx + 1] || '';
+    const nextJobLine = lines[expIdx + 2] || '';
+
+    // Strip date ranges e.g. "July 2026 – Present"
+    const cleanedTitle = jobLine.replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|July|Aug|Sep|Oct|Nov|Dec|\d{4}|Present|Current|\–|\-|\—|\s)+$/gi, '').trim();
+    
+    // Check if next line contains company name e.g. "RenoCred Remote"
+    let companyName = '';
+    if (nextJobLine && !nextJobLine.startsWith('•') && !nextJobLine.startsWith('-')) {
+      companyName = nextJobLine.replace(/\b(Remote|On-site|Hybrid|[A-Z][a-z]+,\s*[A-Z][a-z]+|\d{4}|Present|Current).*$/gi, '').trim();
     }
+
+    // Check if filename suggests a specific role target
+    let targetTitle = '';
+    if (filename) {
+      const titleMatch = filename.match(/(GenAI\s+Solutions\s+Architect|Solutions\s+Architect|AI\s+Engineer|Backend\s+Engineer|Software\s+Engineer)/i);
+      if (titleMatch) targetTitle = titleMatch[0].trim();
+    }
+
+    const finalRole = targetTitle || cleanedTitle || 'Software Engineer';
+    currentRole = companyName ? `${finalRole} at ${companyName}` : finalRole;
   }
 
-  // Fallback role if no company found
   if (!currentRole) {
-    const titleRegex = /(GenAI\s+Solutions\s+Architect|Solutions\s+Architect|Backend\s+(?:Engineer|Developer)|Software\s+(?:Engineer|Developer)|Full[\s-]Stack\s+(?:Engineer|Developer)|Data\s+Engineer|Machine\s+Learning\s+Engineer|AI\s+Engineer)/i;
-    const match = text.match(titleRegex);
-    if (match) {
-      currentRole = match[0].trim();
-    } else if (filename) {
-      // Check if filename contains title
-      const fileMatch = filename.match(/(GenAI\s+Solutions\s+Architect|Solutions\s+Architect|Backend\s+Engineer|Software\s+Engineer|Full\s*Stack\s+Developer)/i);
-      if (fileMatch) currentRole = fileMatch[0].trim();
+    const roleOrgPattern = /([A-Za-z\s]+?(?:Engineer|Developer|Architect|Lead|Manager|Specialist))\s*(?:at|@|\||,|–|-)\s*([A-Za-z0-9\s&]+?)(?=\s*(?:\(|\||\d{4}|Present|Current|\n|$))/i;
+    for (const line of lines) {
+      const m = line.match(roleOrgPattern);
+      if (m && m[1] && m[2]) {
+        currentRole = `${m[1].trim()} at ${m[2].trim()}`;
+        break;
+      }
     }
   }
 
   // 4. Key Experience & Quantified Wins
   let experience = '';
   const bulletLines = [];
-  const expHeaderRegex = /^(?:experience|professional\s+experience|work\s+history|employment\s+history)\b[:\s]*$/i;
-  let inExp = false;
 
-  for (const line of lines) {
-    if (expHeaderRegex.test(line)) {
-      inExp = true;
-      continue;
-    }
-    if (inExp) {
-      if (/^(?:education|projects|skills|certifications|awards)\b[:\s]*$/i.test(line)) {
-        inExp = false;
-        break;
-      }
-      // Check if line looks like a bullet or achievement with action verbs/metrics
-      if (/^[•·*\-–]/.test(line) || /\b(\d+%\b|\d+k\b|reduced|scaled|increased|architected|built|designed|developed|deployed|automated|improved)\b/i.test(line)) {
+  if (expIdx !== -1) {
+    for (let i = expIdx + 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (/^(?:projects|education|certifications|awards|summary)\b[:\s]*$/i.test(line)) break;
+      if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
         const cleanBullet = line.replace(/^[•·*\-–\s]+/, '').trim();
-        if (cleanBullet.length > 20 && !/^(company|location|date|duration)/i.test(cleanBullet)) {
+        if (cleanBullet.length > 25) {
           bulletLines.push(`• ${cleanBullet}`);
           if (bulletLines.length >= 4) break;
         }
@@ -218,18 +238,9 @@ export function extractProfileWithHeuristics(text = '', links = {}, filename = '
 
   if (bulletLines.length > 0) {
     experience = bulletLines.join('\n');
-  } else {
-    // Scan full text for high-impact metric lines
-    const metricLines = lines.filter(l => 
-      /\b(\d+%\s*(?:latency|reduction|increase|improvement|growth)|\d+\s*(?:million|billion|k|users|queries|rps))\b/i.test(l) &&
-      l.length >= 25 && l.length <= 160
-    );
-    if (metricLines.length > 0) {
-      experience = metricLines.slice(0, 3).map(l => `• ${l.replace(/^[•·*\-–\s]+/, '')}`).join('\n');
-    }
   }
 
-  // 5. Link (prefer LinkedIn, then GitHub, then portfolio)
+  // 5. LinkedIn Link (prioritize LinkedIn, then GitHub, then portfolio)
   const link = links.linkedin || links.github || links.portfolio || '';
 
   return {
@@ -242,11 +253,11 @@ export function extractProfileWithHeuristics(text = '', links = {}, filename = '
 }
 
 /**
- * Intelligent LLM Resume Extraction with Cascading Fallback
+ * Master Extraction with Groq LLM and Deterministic Heuristic Cascade
  */
-export async function extractCandidateProfile(text = '', buffer = null, filename = '', html = '') {
-  // Extract all hyperlinks from buffer, text, and structure
-  const links = extractLinks(buffer, text, html);
+export async function extractCandidateProfile(text = '', buffer = null, filename = '', html = '', parser = null) {
+  // Extract all hyperlinks (including PDF annotations)
+  const links = await extractLinks(buffer, text, html, parser);
 
   // If GROQ is available, use fast LLaMA / GPT-OSS to perform high-precision extraction
   if (process.env.GROQ_API_KEY && text && text.trim().length > 50) {
@@ -263,11 +274,11 @@ ${text.slice(0, 6000)}
 """
 
 REQUIREMENTS:
-1. "name": Extract candidate's full name. Clean capitalization.
-2. "currentRole": Candidate's current/recent job title and organization in format: "Role Title at Company" (e.g. "GenAI Solutions Architect at Acme" or "Backend Engineer at RenoCred"). If company is not mentioned, return just the title.
-3. "experience": 3 to 4 concise bullet points of their key achievements and quantified metrics from the Experience section. Each bullet must start with "• ".
-4. "skills": Comma-separated list of technical skills directly from the Skills/Technical Skills section.
-5. "link": Candidate's LinkedIn profile URL (e.g. "https://linkedin.com/in/..."). Prioritize LinkedIn, fallback to GitHub or portfolio if no LinkedIn.
+1. "name": Extract candidate's full name in clean Title Case (e.g. "Dileep Sai Galla").
+2. "currentRole": Candidate's current job title and organization in format: "Role Title at Company" (e.g. "GenAI Solutions Architect at RenoCred" or "Backend Developer Intern at RenoCred").
+3. "experience": 3 to 4 concise bullet points of their top quantifiable achievements and metrics from the Experience section. Separate each bullet with a newline and start each with "• ".
+4. "skills": Comma-separated list of technical skills directly from the Skills/Technical Skills section (e.g. "Python, SQL, Java, LangChain, RAG, Docker...").
+5. "link": Candidate's LinkedIn profile URL (e.g. "https://www.linkedin.com/in/..."). Prioritize LinkedIn URL from detected hyperlinks.
 
 Return ONLY a JSON object:
 {
@@ -316,19 +327,29 @@ Return ONLY a JSON object:
         const content = parsed.choices[0]?.message?.content;
         if (content) {
           const json = JSON.parse(content);
-          // If experience is array, join with newlines
+          
+          // Format experience properly into newline-separated bullets
           let formattedExp = json.experience;
           if (Array.isArray(formattedExp)) {
             formattedExp = formattedExp.map(b => b.startsWith('•') ? b : `• ${b}`).join('\n');
           } else if (typeof formattedExp === 'string') {
             formattedExp = formattedExp.replace(/\\n/g, '\n');
+            if (formattedExp.includes(' • ') && !formattedExp.includes('\n• ')) {
+              formattedExp = formattedExp.split(/\s*•\s*/).filter(Boolean).map(b => `• ${b}`).join('\n');
+            }
           }
 
-          // Ensure link is populated from links if LLM missed it
-          const finalLink = json.link || links.linkedin || links.github || links.portfolio || '';
+          // Format name in Title Case if needed
+          let formattedName = json.name || '';
+          if (formattedName === formattedName.toUpperCase()) {
+            formattedName = formattedName.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase());
+          }
+
+          // Ensure link prioritizes LinkedIn annotation
+          const finalLink = links.linkedin || json.link || links.github || links.portfolio || '';
 
           return {
-            name: json.name || '',
+            name: formattedName,
             currentRole: json.currentRole || '',
             experience: formattedExp || '',
             skills: Array.isArray(json.skills) ? json.skills.join(', ') : (json.skills || ''),

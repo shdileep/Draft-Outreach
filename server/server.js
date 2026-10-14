@@ -50,9 +50,12 @@ app.post(['/api/upload-resume', '/upload-resume'], upload.single('resume'), asyn
       const mimetype = req.file.mimetype || '';
       const filename = req.file.originalname.toLowerCase();
 
+      let parser = null;
+
       if (filename.endsWith('.pdf') || mimetype === 'application/pdf') {
         try {
-          const parser = new PDFParse({ data: buffer });
+          parser = new PDFParse({ data: buffer });
+          await parser.load();
           const pdfData = await parser.getText();
           extractedText = pdfData.text || '';
         } catch (pdfErr) {
@@ -73,7 +76,7 @@ app.post(['/api/upload-resume', '/upload-resume'], upload.single('resume'), asyn
       }
 
       // Extract candidate details via LLM with deterministic NLP fallback
-      const candidate = await extractCandidateProfile(extractedText, buffer, req.file.originalname, html);
+      const candidate = await extractCandidateProfile(extractedText, buffer, req.file.originalname, html, parser);
 
       profileStore.updateProfile({
         name: candidate.name || undefined,
