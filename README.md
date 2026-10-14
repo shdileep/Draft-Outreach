@@ -63,33 +63,3 @@ d:\Draftline
 └── vite.config.js          # Vite config with API proxy
 ```
 
----
-
-## Setup & Running Locally
-
-### 1. Install Dependencies
-```bash
-npm install
-```
-
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env` and provide your API keys:
-```bash
-PORT=5000
-OPENAI_API_KEY=your_openai_key
-GROQ_API_KEY=your_groq_key
-ANTHROPIC_API_KEY=your_anthropic_key
-```
-
-### 3. Run Development Servers
-Start backend API:
-```bash
-node server/server.js
-```
-
-Start frontend:
-```bash
-npm run dev
-```
-
-Open `http://localhost:3000` in your browser.
