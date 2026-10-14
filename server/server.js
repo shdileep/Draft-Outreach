@@ -4,13 +4,13 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { createRequire } from 'module';
 import { profileStore } from './profileStore.js';
 import { generateWithFallbackCascade } from './llmService.js';
 import { extractCandidateProfile } from './extractor.js';
 
 const require = createRequire(import.meta.url);
-const { PDFParse } = require('pdf-parse');
 const mammoth = require('mammoth');
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,16 +50,46 @@ app.post(['/api/upload-resume', '/upload-resume'], upload.single('resume'), asyn
       const mimetype = req.file.mimetype || '';
       const filename = req.file.originalname.toLowerCase();
 
-      let parser = null;
+      const rawUrls = [];
 
       if (filename.endsWith('.pdf') || mimetype === 'application/pdf') {
         try {
-          parser = new PDFParse({ data: buffer });
-          await parser.load();
-          const pdfData = await parser.getText();
-          extractedText = pdfData.text || '';
+          const doc = await pdfjsLib.getDocument({
+            data: new Uint8Array(buffer),
+            useSystemFonts: true,
+            isEvalSupported: false,
+            disableFontFace: true
+          }).promise;
+
+          let fullText = '';
+          for (let i = 1; i <= doc.numPages; i++) {
+            const page = await doc.getPage(i);
+            const textContent = await page.getTextContent();
+            let lastY = null;
+            let pageText = '';
+            for (const item of textContent.items) {
+              if (!item.str) continue;
+              if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+                pageText += '\n';
+              } else if (pageText.length > 0 && !pageText.endsWith(' ') && !pageText.endsWith('\n')) {
+                pageText += ' ';
+              }
+              pageText += item.str;
+              lastY = item.transform[5];
+            }
+            fullText += pageText + '\n';
+
+            const annots = await page.getAnnotations();
+            if (Array.isArray(annots)) {
+              for (const a of annots) {
+                const u = (a.url || a.unsafeUrl || '').trim();
+                if (u && u.startsWith('http')) rawUrls.push(u);
+              }
+            }
+          }
+          extractedText = fullText;
         } catch (pdfErr) {
-          console.warn('[PDFParse Error]', pdfErr.message);
+          console.warn('[PDF Parsing Error]', pdfErr.message);
           extractedText = buffer.toString('utf-8');
         }
       } else if (filename.endsWith('.docx') || filename.endsWith('.doc')) {
@@ -76,7 +106,7 @@ app.post(['/api/upload-resume', '/upload-resume'], upload.single('resume'), asyn
       }
 
       // Extract candidate details via LLM with deterministic NLP fallback
-      const candidate = await extractCandidateProfile(extractedText, buffer, req.file.originalname, html, parser);
+      const candidate = await extractCandidateProfile(extractedText, buffer, req.file.originalname, html, null, rawUrls);
 
       profileStore.updateProfile({
         name: candidate.name || undefined,

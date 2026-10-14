@@ -42,22 +42,27 @@ export async function extractPdfAnnotations(parser) {
 /**
  * Extract links from buffer, text, DOCX HTML, and PDF annotations
  */
-export async function extractLinks(buffer, text = '', html = '', parser = null) {
+export async function extractLinks(buffer, text = '', html = '', parser = null, rawUrls = []) {
   const links = {
     linkedin: '',
     github: '',
     portfolio: ''
   };
 
-  // 1. Check PDF page annotations first (highest accuracy for clickable links in PDFs)
-  if (parser) {
+  const foundUrls = new Set();
+  if (Array.isArray(rawUrls)) {
+    rawUrls.forEach(u => foundUrls.add(u));
+  } else if (Array.isArray(parser)) {
+    parser.forEach(u => foundUrls.add(u));
+  }
+
+  // 1. Check PDF page annotations if parser instance is provided
+  if (parser && typeof parser.load === 'function') {
     const annotLinks = await extractPdfAnnotations(parser);
     if (annotLinks.linkedin) links.linkedin = annotLinks.linkedin;
     if (annotLinks.github) links.github = annotLinks.github;
     if (annotLinks.portfolio) links.portfolio = annotLinks.portfolio;
   }
-
-  const foundUrls = new Set();
 
   // 2. Scan DOCX HTML for <a href="...">
   if (html) {
@@ -255,9 +260,9 @@ export function extractProfileWithHeuristics(text = '', links = {}, filename = '
 /**
  * Master Extraction with Groq LLM and Deterministic Heuristic Cascade
  */
-export async function extractCandidateProfile(text = '', buffer = null, filename = '', html = '', parser = null) {
+export async function extractCandidateProfile(text = '', buffer = null, filename = '', html = '', parser = null, rawUrls = []) {
   // Extract all hyperlinks (including PDF annotations)
-  const links = await extractLinks(buffer, text, html, parser);
+  const links = await extractLinks(buffer, text, html, parser, rawUrls);
 
   // If GROQ is available, use fast LLaMA / GPT-OSS to perform high-precision extraction
   if (process.env.GROQ_API_KEY && text && text.trim().length > 50) {
