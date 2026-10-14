@@ -7,9 +7,10 @@ import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { profileStore } from './profileStore.js';
 import { generateWithFallbackCascade } from './llmService.js';
+import { extractCandidateProfile } from './extractor.js';
 
 const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 const mammoth = require('mammoth');
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,42 +39,90 @@ app.get(['/api/health', '/health'], (req, res) => {
   res.json({ status: 'ok', service: 'Draft Outreach AI Synthesis Engine' });
 });
 
-// Resume upload endpoint (Silent internal processing)
+// Resume upload endpoint (Extracts candidate profile & updates source of truth)
 app.post(['/api/upload-resume', '/upload-resume'], upload.single('resume'), async (req, res) => {
   try {
     let extractedText = '';
+    let html = '';
 
     if (req.file) {
       const buffer = req.file.buffer;
-      const mimetype = req.file.mimetype;
+      const mimetype = req.file.mimetype || '';
       const filename = req.file.originalname.toLowerCase();
 
       if (filename.endsWith('.pdf') || mimetype === 'application/pdf') {
-        const data = await pdfParse(buffer);
-        extractedText = data.text;
+        try {
+          const parser = new PDFParse({ data: buffer });
+          const pdfData = await parser.getText();
+          extractedText = pdfData.text || '';
+        } catch (pdfErr) {
+          console.warn('[PDFParse Error]', pdfErr.message);
+          extractedText = buffer.toString('utf-8');
+        }
       } else if (filename.endsWith('.docx') || filename.endsWith('.doc')) {
         const result = await mammoth.extractRawText({ buffer });
         extractedText = result.value;
+        try {
+          const htmlResult = await mammoth.convertToHtml({ buffer });
+          html = htmlResult.value || '';
+        } catch (htmlErr) {
+          console.warn('[Mammoth HTML Error]', htmlErr.message);
+        }
       } else {
         extractedText = buffer.toString('utf-8');
       }
 
-      profileStore.parseAndSetResumeText(extractedText, req.file.originalname);
+      // Extract candidate details via LLM with deterministic NLP fallback
+      const candidate = await extractCandidateProfile(extractedText, buffer, req.file.originalname, html);
 
-      // Return strictly opaque confirmation; never expose internal profile data
+      profileStore.updateProfile({
+        name: candidate.name || undefined,
+        currentRole: candidate.currentRole || undefined,
+        skills: candidate.skills ? candidate.skills.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+        rawText: extractedText,
+        links: {
+          linkedin: candidate.link?.includes('linkedin') ? candidate.link : '',
+          github: candidate.link?.includes('github') ? candidate.link : '',
+          portfolio: candidate.link && !candidate.link.includes('linkedin') && !candidate.link.includes('github') ? candidate.link : ''
+        }
+      });
+
       return res.json({
         success: true,
         filename: req.file.originalname,
-        message: 'Resume verified & loaded internally as source of truth'
+        message: 'Resume analyzed and fields extracted',
+        candidate: {
+          name: candidate.name || '',
+          currentRole: candidate.currentRole || '',
+          experience: candidate.experience || '',
+          skills: candidate.skills || '',
+          link: candidate.link || ''
+        }
       });
     }
 
     if (req.body.resumeText) {
-      profileStore.parseAndSetResumeText(req.body.resumeText, "manual_input.txt");
+      extractedText = req.body.resumeText;
+      const candidate = await extractCandidateProfile(extractedText, null, "manual_input.txt");
+
+      profileStore.updateProfile({
+        name: candidate.name || undefined,
+        currentRole: candidate.currentRole || undefined,
+        skills: candidate.skills ? candidate.skills.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+        rawText: extractedText
+      });
+
       return res.json({
         success: true,
         filename: 'manual_input.txt',
-        message: 'Resume verified & loaded internally as source of truth'
+        message: 'Resume analyzed and fields extracted',
+        candidate: {
+          name: candidate.name || '',
+          currentRole: candidate.currentRole || '',
+          experience: candidate.experience || '',
+          skills: candidate.skills || '',
+          link: candidate.link || ''
+        }
       });
     }
 

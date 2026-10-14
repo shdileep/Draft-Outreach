@@ -92,7 +92,7 @@ export default function App() {
   const uploadResumeFile = async (file) => {
     const sizeKB = Math.round(file.size / 1024);
     setFileInfo({ name: file.name, size: `${sizeKB} KB · Internal Source of Truth` });
-    setExtractionStatus('Uploading & Verifying...');
+    setExtractionStatus('Extracting Profile...');
 
     try {
       const formData = new FormData();
@@ -105,9 +105,16 @@ export default function App() {
       const data = await res.json();
 
       if (data.success) {
-        setExtractionStatus('Internal Source of Truth Active');
+        setExtractionStatus('Extracted & Active');
+        if (data.candidate) {
+          if (data.candidate.name) setCandName(data.candidate.name);
+          if (data.candidate.currentRole) setCandRole(data.candidate.currentRole);
+          if (data.candidate.experience) setCandExp(data.candidate.experience);
+          if (data.candidate.skills) setCandSkills(data.candidate.skills);
+          if (data.candidate.link) setCandLink(data.candidate.link);
+        }
       } else {
-        setExtractionStatus('Ready to parse');
+        setExtractionStatus('Upload Failed');
       }
     } catch (err) {
       console.error(err);
