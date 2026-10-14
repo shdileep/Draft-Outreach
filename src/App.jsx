@@ -24,27 +24,24 @@ export default function App() {
   const [rotatingIndex, setRotatingIndex] = useState(0);
 
   // Resume & Candidate State
-  const [fileInfo, setFileInfo] = useState({
-    name: "Dileep_Sai_Resume.pdf",
-    size: "184 KB · Internal Source of Truth"
-  });
-  const [extractionStatus, setExtractionStatus] = useState('Internal Source of Truth Active');
+  const [fileInfo, setFileInfo] = useState(null);
+  const [extractionStatus, setExtractionStatus] = useState('Awaiting Upload');
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
-  const [candName, setCandName] = useState('Dileep Sai');
-  const [candRole, setCandRole] = useState('Backend Developer at RenoCred');
-  const [candExp, setCandExp] = useState('• Built robust backend APIs and financial data processing pipelines\n• Integrated LLM workflows and retrieval-augmented systems with evaluation cases\n• Designed agent workflows with function calling');
-  const [candSkills, setCandSkills] = useState('Python, FastAPI, Django, PostgreSQL, Docker, Redis, REST APIs, LLMs');
-  const [candLink, setCandLink] = useState('github.com/shdileep');
+  const [candName, setCandName] = useState('');
+  const [candRole, setCandRole] = useState('');
+  const [candExp, setCandExp] = useState('');
+  const [candSkills, setCandSkills] = useState('');
+  const [candLink, setCandLink] = useState('');
 
   // Target Opportunity State
   const [emailType, setEmailType] = useState('Cold email for a job opportunity');
-  const [targetCompany, setTargetCompany] = useState('Linear');
-  const [targetRole, setTargetRole] = useState('Backend Engineer');
-  const [targetJd, setTargetJd] = useState('Looking for backend engineers passionate about exceptional craft, real-time sync architectures, low-latency APIs, and resilient infrastructure. You care about milliseconds, clean interfaces, and scalable database performance.');
-  const [targetRecipientName, setTargetRecipientName] = useState('Tuomas Artman (Co-founder / Eng)');
-  const [targetSpecificContext, setTargetSpecificContext] = useState('Linear sync engine and operational transform architecture');
+  const [targetCompany, setTargetCompany] = useState('');
+  const [targetRole, setTargetRole] = useState('');
+  const [targetJd, setTargetJd] = useState('');
+  const [targetRecipientName, setTargetRecipientName] = useState('');
+  const [targetSpecificContext, setTargetSpecificContext] = useState('');
   const [tone, setTone] = useState('Professional');
   const [length, setLength] = useState('Concise');
 
@@ -121,18 +118,18 @@ export default function App() {
   const clearUploadedFile = (e) => {
     if (e) e.stopPropagation();
     setFileInfo(null);
-    setExtractionStatus('Ready to parse');
+    setExtractionStatus('Awaiting Upload');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const loadSampleCase = () => {
-    setFileInfo({ name: "Dileep_Sai_Resume.pdf", size: "184 KB · Internal Source of Truth" });
+    setFileInfo({ name: "Sample_Resume.pdf", size: "142 KB · Sample Dossier" });
     setExtractionStatus('Sample Dossier Loaded');
-    setCandName("Dileep Sai");
-    setCandRole("Backend Developer at RenoCred");
-    setCandExp("• Scaled financial data ingestion pipelines, reducing latency by 30%\n• Integrated LLM workflows and retrieval-augmented systems with evaluation cases\n• Designed agent workflows with tool-calling and source attribution");
+    setCandName("Alex Chen");
+    setCandRole("Backend Engineer at TechCorp");
+    setCandExp("• Scaled distributed ingestion pipelines, reducing latency by 30%\n• Integrated LLM workflows and retrieval-augmented systems with evaluation cases\n• Designed agent workflows with tool-calling and source attribution");
     setCandSkills("Python, FastAPI, Django, PostgreSQL, Docker, Redis, REST APIs, LLMs");
-    setCandLink("github.com/shdileep");
+    setCandLink("github.com/alexchen-dev");
 
     setTargetCompany("Linear");
     setTargetRole("Backend Engineer");
@@ -416,7 +413,6 @@ export default function App() {
                     </div>
                     <button
                       onClick={() => {
-                        loadSampleCase();
                         setCurrentView('workspace');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
@@ -473,7 +469,9 @@ export default function App() {
                 <div className="border-b border-brand-lightborder pb-4">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10px] tracking-widest text-brand-muted uppercase">Panel 01</span>
-                    <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200">{extractionStatus}</span>
+                    <span className={`text-[11px] font-mono px-2 py-0.5 border ${fileInfo ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-brand-muted bg-brand-surface border-brand-border'}`}>
+                      {fileInfo ? extractionStatus : 'Awaiting Resume'}
+                    </span>
                   </div>
                   <h3 className="text-lg font-serif mt-1 text-brand-black">Your Background</h3>
                   <p className="text-xs text-brand-muted mt-0.5">Resume serves as the internal source of truth.</p>
@@ -555,7 +553,7 @@ export default function App() {
                       type="text"
                       value={candName}
                       onChange={(e) => setCandName(e.target.value)}
-                      placeholder="e.g. Dileep Sai"
+                      placeholder="e.g. Alex Chen"
                       className="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors"
                     />
                   </div>
@@ -565,7 +563,7 @@ export default function App() {
                       type="text"
                       value={candRole}
                       onChange={(e) => setCandRole(e.target.value)}
-                      placeholder="e.g. Backend Developer at RenoCred"
+                      placeholder="e.g. Backend Developer at Tech Co"
                       className="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors"
                     />
                   </div>
@@ -596,7 +594,7 @@ export default function App() {
                         type="text"
                         value={candLink}
                         onChange={(e) => setCandLink(e.target.value)}
-                        placeholder="e.g. github.com/shdileep"
+                        placeholder="e.g. github.com/username"
                         className="w-full text-xs px-3 py-2 border border-brand-border focus:border-brand-black focus:outline-none bg-white transition-colors"
                       />
                     </div>
@@ -694,7 +692,7 @@ export default function App() {
                           type="text"
                           value={targetRecipientName}
                           onChange={(e) => setTargetRecipientName(e.target.value)}
-                          placeholder="e.g. Tuomas Artman"
+                          placeholder="e.g. Alex Smith (Hiring Manager)"
                           className="w-full text-xs px-2.5 py-1.5 border border-brand-border focus:border-brand-black bg-white"
                         />
                       </div>

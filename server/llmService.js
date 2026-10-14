@@ -136,8 +136,8 @@ async function callGroq(model, systemPrompt, userPrompt, apiKey) {
 // 4. Deterministic Playbook Synthesis Engine (100% Guaranteed Fallback)
 function deterministicPlaybookSynthesis(context) {
   const { profile, jobDescription, targetCompany, targetRole, outreachType, tone, length, recipientName, specificContext } = context;
-  const name = profile.name || "Dileep Sai";
-  const currentRole = profile.currentRole || "Backend Developer";
+  const name = profile.name || "Candidate";
+  const currentRole = profile.currentRole || "Software Engineer";
   const company = targetCompany || "your team";
   const role = targetRole || "Backend Developer";
 

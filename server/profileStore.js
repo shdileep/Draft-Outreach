@@ -6,45 +6,15 @@
 
 class ProfileStore {
   constructor() {
-    // Default baseline initialized with Dileep Sai from the official playbook reference
     this.currentProfile = {
-      name: "Dileep Sai",
-      currentRole: "Backend Developer at RenoCred (early-stage fintech startup)",
-      headline: "Backend Developer | API Development & AI Integrations",
-      summary: "Backend developer focused on building scalable APIs, LLM integrations, agentic workflows, AI evaluation, and financial data processing pipelines.",
-      skills: [
-        "Python", "FastAPI", "Django", "PostgreSQL", "Docker", "REST APIs",
-        "LLM Integrations", "Agent Workflows", "Vector Retrieval (RAG)", "Embeddings",
-        "AI Evaluation", "Financial Data Processing", "Redis", "Git", "Testing"
-      ],
-      experience: [
-        {
-          company: "RenoCred",
-          role: "Backend Developer",
-          duration: "Present",
-          highlights: [
-            "Built robust backend APIs and ingestion pipelines for financial data processing.",
-            "Integrated LLM workflows and retrieval augmentation with structured evaluations to ensure reliability.",
-            "Designed and deployed agent workflows with tool/function calling and source attribution."
-          ]
-        }
-      ],
-      projects: [
-        {
-          name: "AI Support & Retrieval Engine",
-          problem: "Document question answering with source attribution and evaluation.",
-          implementation: "Implemented document ingestion, chunking, embedding retrieval, and an API layer using FastAPI, vector store, and LLM providers.",
-          stack: ["Python", "FastAPI", "Vector Store", "LLMs", "RAG"],
-          outcome: "Delivered source-aware answers with custom evaluation cases to inspect failure modes."
-        }
-      ],
-      education: [
-        {
-          degree: "B.Tech in Computer Science and Engineering",
-          institution: "University",
-          year: "2024"
-        }
-      ],
+      name: "",
+      currentRole: "",
+      headline: "",
+      summary: "",
+      skills: [],
+      experience: [],
+      projects: [],
+      education: [],
       links: {
         portfolio: "",
         github: "",
