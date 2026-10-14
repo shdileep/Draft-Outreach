@@ -34,12 +34,12 @@ const upload = multer({
 });
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({ status: 'ok', service: 'Draft Outreach AI Synthesis Engine' });
 });
 
 // Resume upload endpoint (Silent internal processing)
-app.post('/api/upload-resume', upload.single('resume'), async (req, res) => {
+app.post(['/api/upload-resume', '/upload-resume'], upload.single('resume'), async (req, res) => {
   try {
     let extractedText = '';
 
@@ -85,7 +85,7 @@ app.post('/api/upload-resume', upload.single('resume'), async (req, res) => {
 });
 
 // Main generation endpoint
-app.post('/api/generate', async (req, res) => {
+app.post(['/api/generate', '/generate'], async (req, res) => {
   try {
     const {
       jobDescription = '',
@@ -146,6 +146,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(PORT, () => {
-  console.log(`[Draft Outreach Unified Server] Application running entirely on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[Draft Outreach Unified Server] Application running entirely on port ${PORT}`);
+  });
+}
+
+export default app;
